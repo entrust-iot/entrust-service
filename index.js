@@ -28,6 +28,7 @@ client.on('connect', function() { // When connected
 });
 
 function sendDataToMetaDataServer(packet) {
+    console.log("Sending meta data");
     var postData = JSON.stringify({
         'type' : packet.cmd,
         'length': packet.length,
@@ -51,7 +52,10 @@ function sendDataToMetaDataServer(packet) {
         });
         res.on('end', function() {
             console.log('No more data in response.')
-        })
+        });
+        res.on("success", function(data) {
+            console.log(data);
+        });
     });
 }
 
