@@ -1,27 +1,21 @@
-var mqtt = require('mqtt'), url = require('url');
+var mqtt = require("mqtt");
 // Parse
-var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
-var auth = (mqtt_url.auth || ':').split(':');
 
 // Create a client connection
-var client = mqtt.createClient(mqtt_url.port, mqtt_url.hostname, {
-    username: auth[0],
-    password: auth[1]
+var client = mqtt.createClient(1883, "127.0.0.1", {
+    username: "",
+    password: ""
 });
 
 client.on('connect', function() { // When connected
 
     // subscribe to a topic
-    client.subscribe('hello/world', function() {
+    client.subscribe("#", function() {
         // when a message arrives, do something with it
-        client.on('message', function(topic, message, packet) {
+        client.on("message", function(topic, message, packet) {
             console.log("Received '" + message + "' on '" + topic + "'");
+            console.log("Packet: " + packet);
         });
     });
 
-    // publish a message to a topic
-    client.publish('hello/world', 'my message', function() {
-        console.log("Message is published");
-        client.end(); // Close the connection when published
-    });
 });
