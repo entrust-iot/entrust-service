@@ -1,5 +1,7 @@
 var mqtt = require("mqtt");
 
+var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
+
 new mqtt.Server(function(client) {
     var self = this;
 
@@ -65,4 +67,4 @@ new mqtt.Server(function(client) {
         console.log(e);
     });
 
-}).listen(process.env.PORT || 1883);
+}).listen(mqtt_url.port || 1883);
