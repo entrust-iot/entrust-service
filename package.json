@@ -7,7 +7,8 @@
     "start": "node index.js"
   },
   "dependencies": {
-    "mqtt": "^1.6.1"
+    "mqtt": "^1.6.1",
+    "url": "^0.11.0"
   },
   "engines": {
     "node": "0.12.7"

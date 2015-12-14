@@ -1,4 +1,5 @@
 var mqtt = require("mqtt");
+url = require('url');
 
 var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
 
