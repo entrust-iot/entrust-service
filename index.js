@@ -1,6 +1,5 @@
 var mqtt = require("mqtt");
 var http = require("http");
-var querystring = require("querystring");
 
 var METADATASERVER = {
     hostname: "stark-shore-8953.herokuapp.com",
@@ -22,15 +21,17 @@ client.on('connect', function() { // When connected
             console.log("Received '" + message + "' on '" + topic + "'");
             console.log("Packet: " + packet);
             console.log(packet);
-            sendDataToMetaDataServer(topic, message)
+            sendDataToMetaDataServer(packet)
         });
     });
 
 });
 
-function sendDataToMetaDataServer() {
-    var postData = querystring.stringify({
-        'msg' : 'Hello World!'
+function sendDataToMetaDataServer(packet) {
+    var postData = JSON.stringify({
+        'type' : packet.cmd,
+        'length': packet.length,
+        'topic': packet.topic
     });
 
     var options = {
@@ -39,22 +40,19 @@ function sendDataToMetaDataServer() {
         path: '/meta',
         method: 'POST',
         headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Type': 'application/json',
             'Content-Length': postData.length
         }
     };
 
-    //var req = http.request(options, function(res) {
-    //    console.log('STATUS: ' + res.statusCode);
-    //    console.log('HEADERS: ' + JSON.stringify(res.headers));
-    //    res.setEncoding('utf8');
-    //    res.on('data', function (chunk) {
-    //        console.log('BODY: ' + chunk);
-    //    });
-    //    res.on('end', function() {
-    //        console.log('No more data in response.')
-    //    })
-    //});
+    var req = http.request(options, function(res) {
+        res.on('data', function (chunk) {
+            console.log('BODY: ' + chunk);
+        });
+        res.on('end', function() {
+            console.log('No more data in response.')
+        })
+    });
 }
 
 function sendDataToEnterpriseHub() {
