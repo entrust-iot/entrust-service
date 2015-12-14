@@ -71,3 +71,4 @@ new mqtt.Server(function(client) {
 }).listen(mqtt_url.port || 1883);
 
 console.log("Listening on " + mqtt_url.port || 1883);
+console.log(mqtt_url.toString());
