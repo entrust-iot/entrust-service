@@ -1,74 +1,27 @@
-var mqtt = require("mqtt");
-url = require('url');
-
+var mqtt = require('mqtt'), url = require('url');
+// Parse
 var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
+var auth = (mqtt_url.auth || ':').split(':');
 
-new mqtt.Server(function(client) {
-    var self = this;
+// Create a client connection
+var client = mqtt.createClient(mqtt_url.port, mqtt_url.hostname, {
+    username: auth[0],
+    password: auth[1]
+});
 
-    if (!self.clients) self.clients = {};
+client.on('connect', function() { // When connected
 
-    client.on("connect", function(packet) {
-        self.clients[packet.clientId] = client;
-        client.id = packet.clientId;
-        console.log("CONNECTION: Connection established by client id " + client.id);
-        client.subscriptions = [];
-
-        client.connack({returnCode: 0});
+    // subscribe to a topic
+    client.subscribe('hello/world', function() {
+        // when a message arrives, do something with it
+        client.on('message', function(topic, message, packet) {
+            console.log("Received '" + message + "' on '" + topic + "'");
+        });
     });
 
-    client.on("subscribe", function(packet) {
-        var granted = [];
-
-        console.log("SUBSCRIPTION: Client id " + client.id + " connected to " + packet);
-
-        for (var i = 0; i < packet.subscriptions.length; i++) {
-            var qos = packet.subscriptions[i].qos
-                , topic = packet.subscriptions[i].topic
-                , reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
-
-            granted.push(qos);
-            client.subscriptions.push(reg);
-        }
-
-        client.suback({messageId: packet.messageId, granted: granted});
+    // publish a message to a topic
+    client.publish('hello/world', 'my message', function() {
+        console.log("Message is published");
+        client.end(); // Close the connection when published
     });
-
-    client.on("publish", function(packet) {
-        console.log("PUBLISHING: Client id " + client.id + " published to " + packet);
-        for (var k in self.clients) {
-            var c = self.clients[k];
-
-            for (var i = 0; i < c.subscriptions.length; i++) {
-                var s = c.subscriptions[i];
-
-                if (s.test(packet.topic)) {
-                    c.publish({topic: packet.topic, payload: packet.payload});
-                    break;
-                }
-            }
-        }
-    });
-
-    client.on('pingreq', function(packet) {
-        console.log('PINGREQ(%s)', client.id);
-        client.pingresp();
-    });
-
-    client.on('disconnect', function(packet) {
-        client.stream.end();
-    });
-
-    client.on('close', function(packet) {
-        delete self.clients[client.id];
-    });
-
-    client.on('error', function(e) {
-        client.stream.end();
-        console.log(e);
-    });
-
-}).listen(mqtt_url.port || 1883);
-
-console.log("Listening on " + mqtt_url.port || 1883);
-console.log(mqtt_url.toString());
+});
