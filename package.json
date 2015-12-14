@@ -1,0 +1,24 @@
+{
+  "name": "entrust-service",
+  "version": "0.1.0",
+  "description": "A first POC for the entrust service gateway",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+
+  },
+  "engines": {
+    "node": "0.12.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paxl13/entrust-service"
+  },
+  "keywords": [
+    "node",
+    "heroku"
+  ],
+  "license": "MIT"
+}
