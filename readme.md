@@ -12,3 +12,9 @@ sudo apt-get install mosquitto
 Install NodeJs
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 sudo apt-get install -y nodejs
+
+Install Git
+sudo apt-get install git
+
+Clone the repo
+git clone http://github.com/paxl13/entrust-service
