@@ -23,13 +23,13 @@ client.on('connect', function() { // When connected
             console.log("Received '" + message + "' on '" + topic + "'");
             console.log("Packet: " + packet);
             console.log(packet);
-            sendDataToMetaDataServer(packet)
+            sendDataToMetaDataServer(message, packet)
         });
     });
 
 });
 
-function sendDataToMetaDataServer(packet) {
+function sendDataToMetaDataServer(message, packet) {
     console.log("Sending meta data");
     var postData = {
         "type" : packet.cmd,
@@ -45,16 +45,39 @@ function sendDataToMetaDataServer(packet) {
 
     request(options, function (error, response, body) {
         console.log("Response from metadata server");
-        console.log(response);
         if (error) {
+            console.log("ERROR");
+            console.log(error);
+        }
+        if (!error && response.statusCode == 200) {
+            sendDataToEnterpriseHub(message, packet, JSON.parse(body));
+        }
+    });
+}
+
+function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
+    console.log("Sending hub data");
+    //Topic should contain /TENANT_ID/DEVICE_ID/SENSOR_ID
+    if (packet.topic.substr(0,1) === "/") {
+        packet.topic = packet.topic.substr(1);
+    }
+    var topicData = packet.topic.split["/"];
+    var sensorId = topicData[2];
+    var baseUrl = metadataServerResponse.tenant_data.protocol + "://" + metadataServerResponse.tenant_data.hostname + "/";
+    var options = {
+        uri: baseUrl + sensorId + "/" + message,
+        method: 'POST',
+        json: {}
+    };
+
+    request(options, function (error, response, body) {
+        console.log("Response from enterprise hub server");
+        if (error) {
+            console.log("ERROR");
             console.log(error);
         }
         if (!error && response.statusCode == 200) {
             console.log(body);
         }
     });
-}
-
-function sendDataToEnterpriseHub() {
-
 }
