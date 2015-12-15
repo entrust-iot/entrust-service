@@ -45,6 +45,9 @@ function sendDataToMetaDataServer(packet) {
     request(options, function (error, response, body) {
         console.log("Response from metadata server");
         console.log(response);
+        if (error) {
+            console.log(error);
+        }
         if (!error && response.statusCode == 200) {
             console.log(body);
         }
