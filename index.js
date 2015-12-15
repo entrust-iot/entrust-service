@@ -53,7 +53,7 @@ function sendDataToMetaDataServer(message, packet) {
             console.log("Response received from metadata server");
             console.log(body);
 
-            sendDataToEnterpriseHub(message, packet, JSON.parse(body));
+            sendDataToEnterpriseHub(message, packet, body);
         }
     });
 }
