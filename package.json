@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "http": "0.0.0",
-    "mqtt": "^1.6.1"
+    "mqtt": "^1.6.1",
+    "request": "^2.67.0"
   },
   "engines": {
     "node": "0.12.7"

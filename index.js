@@ -1,9 +1,10 @@
 var mqtt = require("mqtt");
-var http = require("http");
+var request = require("request");
 
 var METADATASERVER = {
     hostname: "stark-shore-8953.herokuapp.com",
-    port: "80"
+    port: "80",
+    path: "/meta"
 };
 
 // Create a client connection
@@ -36,26 +37,15 @@ function sendDataToMetaDataServer(packet) {
     });
 
     var options = {
-        hostname: METADATASERVER.hostname,
-        port: METADATASERVER.port,
-        path: '/meta',
+        uri: METADATASERVER.hostname + METADATASERVER.path,
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': postData.length
-        }
+        json: postData
     };
 
-    var req = http.request(options, function(res) {
-        res.on('data', function (chunk) {
-            console.log('BODY: ' + chunk);
-        });
-        res.on('end', function() {
-            console.log('No more data in response.')
-        });
-        res.on("success", function(data) {
-            console.log(data);
-        });
+    request(options, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body);
+        }
     });
 }
 
