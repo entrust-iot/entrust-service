@@ -61,10 +61,11 @@ function sendDataToMetaDataServer(message, packet) {
 function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
     console.log("Sending hub data");
     //Topic should contain /TENANT_ID/DEVICE_ID/SENSOR_ID
+    //var packet = {topic: "/TENANT1/j2jj41j2k4j124-12k1j24/sensor2"};
     if (packet.topic.substr(0,1) === "/") {
         packet.topic = packet.topic.substr(1);
     }
-    var topicData = packet.topic.split["/"];
+    var topicData = packet.topic.split("/");
     var sensorId = topicData[2];
     var baseUrl = metadataServerResponse.tenant_data.protocol + "://" + metadataServerResponse.tenant_data.hostname + "/";
     var options = {
