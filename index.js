@@ -31,11 +31,11 @@ client.on('connect', function() { // When connected
 
 function sendDataToMetaDataServer(packet) {
     console.log("Sending meta data");
-    var postData = JSON.stringify({
-        'type' : packet.cmd,
-        'length': packet.length,
-        'topic': packet.topic
-    });
+    var postData = {
+        "type" : packet.cmd,
+        "length": packet.length,
+        "topic": packet.topic
+    };
 
     var options = {
         uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.path,
