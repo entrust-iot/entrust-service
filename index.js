@@ -73,15 +73,20 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
         method: 'POST',
         json: {}
     };
+    console.log("POST " + options.uri);
 
     request(options, function (error, response, body) {
         console.log("Response from enterprise hub server");
         if (error) {
             console.log("ERROR");
             console.log(error);
+            return;
         }
-        if (!error && response.statusCode == 200) {
+        if (response.statusCode == 200) {
             console.log(body);
+        } else {
+            console.log("Unexpected response");
+            console.log(response);
         }
     });
 }
