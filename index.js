@@ -2,6 +2,7 @@ var mqtt = require("mqtt");
 var request = require("request");
 
 var METADATASERVER = {
+    protocol: "http",
     hostname: "stark-shore-8953.herokuapp.com",
     port: "80",
     path: "/meta"
@@ -37,7 +38,7 @@ function sendDataToMetaDataServer(packet) {
     });
 
     var options = {
-        uri: METADATASERVER.hostname + METADATASERVER.path,
+        uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.path,
         method: 'POST',
         json: postData
     };
