@@ -55,6 +55,10 @@ function sendDataToMetaDataServer(message, packet) {
 
             sendDataToEnterpriseHub(message, packet, body);
         }
+        if (!error && response.statusCode !== 200) {
+            console.log("Unexpected response from server");
+            console.log(body);
+        }
     });
 }
 
