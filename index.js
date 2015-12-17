@@ -23,7 +23,8 @@ client.on('connect', function() { // When connected
             console.log("Received '" + message + "' on '" + topic + "'");
             console.log("Packet: " + packet);
             console.log(packet);
-            sendDataToMetaDataServer(message, packet)
+            var msg = JSON.parse(message);
+            sendDataToMetaDataServer(msg, packet);
         });
     });
 
@@ -71,7 +72,7 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
     var sensorId = topicData[2];
     var baseUrl = metadataServerResponse.tenant_data.protocol + "://" + metadataServerResponse.tenant_data.hostname + "/";
     var options = {
-        uri: baseUrl + sensorId + "/" + message,
+        uri: baseUrl + sensorId + "/" + message.value,
         method: 'POST',
         json: {}
     };
