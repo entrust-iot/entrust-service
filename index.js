@@ -21,8 +21,7 @@ client.on('connect', function() { // When connected
         // when a message arrives, do something with it
         client.on("message", function(topic, message, packet) {
             console.log("Received '" + message + "' on '" + topic + "'");
-            console.log("Packet: " + packet);
-            console.log(packet);
+
             var msg = JSON.parse(message);
             sendDataToMetaDataServer(msg, packet);
         });
@@ -61,10 +60,14 @@ function sendDataToMetaDataServer(message, packet) {
 
 function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
     console.log("Sending hub data");
+
+    if (!metadataServerResponse.tenant_data.protocol || !metadataServerResponse.tenant_data.hostname) {
+        console.log("No valid EDH found, exiting...");
+        return;
+    }
     //Topic should contain /TENANT_ID/DEVICE_ID/SENSOR_ID
     //var packet = {topic: "/TENANT1/j2jj41j2k4j124-12k1j24/sensor2"};
-    console.log("Topic");
-    console.log(packet.topic);
+
     if (packet.topic.substr(0,1) === "/") {
         packet.topic = packet.topic.substr(1);
     }
@@ -76,7 +79,6 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
         method: 'POST',
         json: {}
     };
-    console.log("POST " + options.uri);
 
     request(options, function (error, response, body) {
         console.log("Response from enterprise hub server");
@@ -86,7 +88,7 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
             return;
         }
         if (response.statusCode == 200) {
-            console.log(body);
+            console.log("Sucessfully sent data to metadata server and enterprise hub");
         } else {
             console.log("Unexpected response");
             console.log(response);
