@@ -76,10 +76,11 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
         packet.topic = packet.topic.substr(1);
     }
     var topicData = packet.topic.split("/");
+    var deviceId = topicData[1];
     var sensorId = topicData[2];
     var baseUrl = metadataServerResponse.tenant_data.protocol + "://" + metadataServerResponse.tenant_data.hostname + "/";
     var options = {
-        uri: baseUrl + sensorId + "/" + message.value,
+        uri: baseUrl + deviceId + "/" + sensorId + "/" + message.value,
         method: 'POST',
         json: {}
     };
