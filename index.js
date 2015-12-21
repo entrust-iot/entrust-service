@@ -64,6 +64,7 @@ function sendDataToMetaDataServer(message, packet) {
 
 function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
     console.log("Sending hub data");
+    console.log(message);
 
     if (!metadataServerResponse.tenant_data.protocol || !metadataServerResponse.tenant_data.hostname) {
         console.log("No valid EDH found, exiting...");
