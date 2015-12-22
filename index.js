@@ -55,7 +55,11 @@ function sendDataToMetaDataServer(message, packet) {
             console.log("Sending data to enterprise hub");
             console.log(message);
 
-            sendDataToEnterpriseHub(JSON.parse(message), packet, body);
+            if (typeof message !== "object") {
+                message = JSON.parse(message);
+            }
+
+            sendDataToEnterpriseHub(message, packet, body);
         }
         if (!error && response.statusCode !== 200) {
             console.log("Unexpected response from server");
