@@ -82,6 +82,11 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
     if (packet.topic.substr(0,1) === "/") {
         packet.topic = packet.topic.substr(1);
     }
+
+    if (typeof message === "object" && message.value) {
+        message = message.value;
+    }
+
     var topicData = packet.topic.split("/");
     var deviceId = topicData[1];
     var sensorId = topicData[2];
