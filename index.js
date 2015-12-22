@@ -52,6 +52,7 @@ function sendDataToMetaDataServer(message, packet) {
         if (!error && response.statusCode == 200) {
             console.log("Response received from metadata server");
             console.log(body);
+            console.log(message);
 
             sendDataToEnterpriseHub(JSON.parse(message), packet, body);
         }
