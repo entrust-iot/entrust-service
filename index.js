@@ -5,7 +5,8 @@ var METADATASERVER = {
     protocol: "http",
     hostname: "stark-shore-8953.herokuapp.com",
     port: "80",
-    path: "/meta"
+    path: "/meta",
+    initPath: "/init"
 };
 
 // Create a client connection
@@ -23,11 +24,40 @@ client.on('connect', function() { // When connected
             console.log("Received '" + message + "' on '" + topic + "'");
 
             var msg = JSON.parse(message);
-            sendDataToMetaDataServer(msg, packet);
+            console.log(topic);
+
+            if (topic.indexOf('edge') === 0) {
+              // discard any messages published for the edges..
+              return;
+            } else if (topic === 'init') {
+              handleInitRequest(msg);
+            } else {
+              sendDataToMetaDataServer(msg, packet);
+            }
         });
     });
 
 });
+
+function handleInitRequest(message) {
+  var initOptions = '/' + message.apiKey + '/' + message.mac;
+
+  var options = {
+      uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.initPath + initOptions,
+      method: 'GET'
+  };
+
+  request(options, function (error, response, body) {
+    console.log('received tenant')
+
+    var data = JSON.parse(body);
+    data.agentId = message.agentId;
+
+    console.log('data',data);
+
+    client.publish("edge/" + message.edgeId, JSON.stringify(data));
+  });
+}
 
 function sendDataToMetaDataServer(message, packet) {
     console.log("Sending meta data");
