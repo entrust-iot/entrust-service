@@ -18,6 +18,24 @@ Install Git
 Clone the repo
 - `git clone https://github.com/entrust-iot/entrust-service`
 
+Prepare mosquitto to use TLS
+- `cd entrust-service`
+- `sudo cp mosquitto-entrust-service.conf /etc/mosquitto/conf.d`
+
+- From a temp folder
+- `wget https://github.com/entrust-iot/entrust-edge/raw/master/bridge/security/generate-CA.sh`
+- `chmod 744 generate-CA.sh`
+- `HOSTLIST="entrust-service.cloudapp.net" ./generate-CA.sh entrust-service`
+- `sudo cp ca.crt /etc/mosquitto/ca_certificates/service-ca.crt`
+- `sudo cp entrust-service.{crt,key} /etc/mosquitto/certs`
+- `./generate-CA.sh client service-client`
+- `cp ca.crt <entrust-service repo>/security/service-ca.crt`
+- `cp service-client.{crt,key} <entrust-service repo>/security/`
+
+Copy key and certs to the edge gatewaty
+- `cp service-client.{crt,key} <entrust-edge repo on edge machine>/security/`
+
+
 Details & API
 The node server runs both a MQTT listener that is subscribed to the root and will take care of sending the requests
 to the Metadata server and the Enterprise Hub.
