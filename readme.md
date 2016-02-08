@@ -26,6 +26,7 @@ MQTT.on#message
 The message should be sent to the topic
 `/{tenant_id}/{device_id}/{sensor_id}`
 Payload should be
+
     {
      "value": 123 //Value of the sensor
     }
