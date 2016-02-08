@@ -16,7 +16,7 @@ Install Git
 - `sudo apt-get install git`
 
 Clone the repo
-- `git clone http://github.com/paxl13/entrust-service`
+- `git clone https://github.com/entrust-iot/entrust-service`
 
 Details & API
 The node server runs both a MQTT listener that is subscribed to the root and will take care of sending the requests
