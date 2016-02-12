@@ -10,9 +10,9 @@ const SECURE_KEY = SEC_DIR + '/service-client.key';
 const SECURE_CA = SEC_DIR + '/service-ca.crt';
 
 const METADATASERVER = {
-    protocol: "http",
+    protocol: "https",
     hostname: "stark-shore-8953.herokuapp.com",
-    port: "80",
+    port: "443",
     path: "/meta",
     initPath: "/init"
 };
@@ -70,7 +70,8 @@ function handleInitRequest(message) {
 
   var options = {
     uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.initPath + initOptions,
-    method: 'GET'
+    method: 'GET',
+    strictSSL: true
   };
 
   request(options, function (error, response, body) {
@@ -96,7 +97,8 @@ function sendDataToMetaDataServer(message, packet) {
   var options = {
     uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.path,
     method: 'POST',
-    json: postData
+    json: postData,
+    strictSSL: true
   };
 
   request(options, function (error, response, body) {
@@ -150,7 +152,8 @@ function sendDataToEnterpriseHub(message, packet, metadataServerResponse) {
   var options = {
     uri: baseUrl + deviceId + "/" + sensorId + "/" + message,
     method: 'POST',
-    json: {}
+    json: {},
+    strictSSL: true
   };
 
   request(options, function (error, response, body) {

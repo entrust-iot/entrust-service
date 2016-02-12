@@ -4,10 +4,9 @@
   "description": "A first POC for the entrust service gateway",
   "main": "index.js",
   "dependencies": {
-    "http": "0.0.0",
     "mqtt": "^1.6.1",
-    "request": "^2.67.0",
-    "q": "^1.4.1"
+    "q": "^1.4.1",
+    "request": "^2.67.0"
   },
   "repository": {
     "type": "git",
