@@ -4,7 +4,7 @@ const request = require("request");
 const Q = require("q");
 
 const LOCALHOST = '127.0.0.1';
-const SEC_DIR = __dirname + 'security';
+const SEC_DIR = __dirname + '/security';
 const SECURE_CERT = SEC_DIR + '/service-client.crt';
 const SECURE_KEY = SEC_DIR + '/service-client.key';
 const SECURE_CA = SEC_DIR + '/service-ca.crt';
