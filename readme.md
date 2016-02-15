@@ -28,6 +28,7 @@ Prepare mosquitto to use TLS
 - `HOSTLIST="entrust-service.cloudapp.net" ./generate-CA.sh entrust-service`
 - `sudo cp ca.crt /etc/mosquitto/ca_certificates/service-ca.crt`
 - `sudo cp entrust-service.{crt,key} /etc/mosquitto/certs`
+- `sudo chown mosquitto /etc/mosquitto/certs/entrust-service.key`
 - `./generate-CA.sh client service-client`
 - `cp ca.crt <entrust-service repo>/security/service-ca.crt`
 - `cp service-client.{crt,key} <entrust-service repo>/security/`
