@@ -82,19 +82,27 @@ function connectHandler() { // When connected
 
 function handleInitRequest(topic, message, packet) {
   console.log("Sending meta data");
-  var initOptions = '/' + message.apiKey + '/' + message.mac + '/' + message.agentId + '/' + message.edgeId;
 
   var options = {
-    uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.initPath + initOptions,
-    method: 'GET',
+    uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.initPath,
+    method: 'POST',
+    json: message,
     strictSSL: true
   };
 
   request(options, function (error, response, body) {
-
-    var data = JSON.parse(body);
-    data.agentId = message.agentId;
-    client.publish("edge/" + message.edgeId, JSON.stringify(data));
+    if (error) {
+      console.log("ERROR");
+      console.log(error);
+      return;
+    } else if (response.statusCode == 200) {
+      var data = _.assign({}, body);
+      data.agentId = message.agentId;
+      client.publish("edge/" + message.edgeId, JSON.stringify(data));
+    } else {
+      console.log("Unexpected response from server");
+      console.log(body);
+    }
   });
 }
 
@@ -135,9 +143,10 @@ function handleEdgeDisconnect(topic, message, packet) {
 function handleSensorData(topic, message, packet) {
   console.log("Sending meta data");
   var postData = {
-    "type" : packet.cmd,
-    "length": packet.length,
-    "topic": packet.topic
+    type: packet.cmd,
+    length: packet.length,
+    topic: packet.topic,
+    certName: message.certName
   };
 
   var options = {
@@ -153,7 +162,10 @@ function handleSensorData(topic, message, packet) {
       console.log("ERROR");
       console.log(error);
     }
-    if (!error && response.statusCode == 200) {
+    else if (response.statusCode == 200) {
+      // strip certName  before sending to hub
+      delete message.certName ;
+
       console.log("Response received from metadata server");
       console.log(body);
       console.log("Sending data to enterprise hub");
@@ -165,7 +177,7 @@ function handleSensorData(topic, message, packet) {
 
       sendDataToEnterpriseHub(message, packet, body);
     }
-    if (!error && response.statusCode !== 200) {
+    else {
       console.log("Unexpected response from server");
       console.log(body);
     }
