@@ -6,7 +6,8 @@
   "dependencies": {
     "mqtt": "^1.6.1",
     "q": "^1.4.1",
-    "request": "^2.67.0"
+    "request": "^2.67.0",
+    "lodash": "^4.3.0"
   },
   "repository": {
     "type": "git",

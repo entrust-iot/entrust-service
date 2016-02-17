@@ -14,9 +14,12 @@ const METADATASERVER = {
     hostname: "stark-shore-8953.herokuapp.com",
     port: "443",
     path: "/meta",
+    devicePath: "/devices/",
+    edgePath: "/edge/",
     initPath: "/init"
 };
 
+var _ = require('lodash');
 var client = undefined;
 
 // Create a client connection
@@ -43,30 +46,43 @@ function readSecureFiles() {
   });
 };
 
+function messageRouter(routes) {
+  return function router(topic, message, packet) {
+    console.log("Received '" + message + "' on '" + topic + "'");
+
+    var route = _.find(routes, function(r) {
+      var re = r.route;
+      return re.test(topic);
+    });
+
+    console.log('route', route);
+    if (route) {
+      var msg = JSON.parse(message);
+      route.fct(topic, msg, packet);
+    }
+  };
+};
+
 function connectHandler() { // When connected
   // subscribe to a topic
   client.subscribe("#", function() {
     // when a message arrives, do something with it
-    client.on("message", function(topic, message, packet) {
-      console.log("Received '" + message + "' on '" + topic + "'");
 
-      var msg = JSON.parse(message);
-      console.log(topic);
+    var routesConfig = [
+      { route: /edge/, fct: function() {} },
+      { route: /init/, fct: handleInitRequest },
+      { route: /agent_disconnected/, fct: handleAgentDisconnect },
+      { route: /edge_disconnected/, fct: handleEdgeDisconnect },
+      { route: /\w*\/.*?\//, fct: handleSensorData }
+    ];
 
-      if (topic.indexOf('edge') === 0) {
-        // discard any messages published for the edges..
-        return;
-      } else if (topic === 'init') {
-        handleInitRequest(msg);
-      } else {
-        sendDataToMetaDataServer(msg, packet);
-      }
-    });
+    client.on("message", messageRouter(routesConfig));
   });
 };
 
-function handleInitRequest(message) {
-  var initOptions = '/' + message.apiKey + '/' + message.mac;
+function handleInitRequest(topic, message, packet) {
+  console.log("Sending meta data");
+  var initOptions = '/' + message.apiKey + '/' + message.mac + '/' + message.agentId + '/' + message.edgeId;
 
   var options = {
     uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.initPath + initOptions,
@@ -75,18 +91,48 @@ function handleInitRequest(message) {
   };
 
   request(options, function (error, response, body) {
-    console.log('received tenant')
 
     var data = JSON.parse(body);
     data.agentId = message.agentId;
-
-    console.log('data',data);
-
     client.publish("edge/" + message.edgeId, JSON.stringify(data));
   });
 }
 
-function sendDataToMetaDataServer(message, packet) {
+function handleAgentDisconnect(topic, message, packet) {
+  console.log("Received Agent Disconnect");
+
+  var postData = {
+    'status': 'offline'
+  };
+
+  var options = {
+    uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.devicePath + message.agentId,
+    method: 'PUT',
+    json: postData,
+    strictSSL: true
+  };
+
+  request(options);
+}
+
+function handleEdgeDisconnect(topic, message, packet) {
+  console.log("Received Agent Disconnect");
+
+  var postData = {
+    'status': 'offline'
+  };
+
+  var options = {
+    uri: METADATASERVER.protocol + "://" + METADATASERVER.hostname + METADATASERVER.edgePath + message.edgeId,
+    method: 'PUT',
+    json: postData,
+    strictSSL: true
+  };
+
+  request(options);
+}
+
+function handleSensorData(topic, message, packet) {
   console.log("Sending meta data");
   var postData = {
     "type" : packet.cmd,
