@@ -96,7 +96,7 @@ function handleInitRequest(topic, message, packet) {
       console.log(error);
       return;
     } else if (response.statusCode == 200) {
-      var data = _.assign({}, body);
+      var data = _.clone(body);
       data.agentId = message.agentId;
       client.publish("edge/" + message.edgeId, JSON.stringify(data));
     } else {
